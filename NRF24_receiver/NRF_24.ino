@@ -26,13 +26,13 @@ void NRF24_receive() {
   GyX.myByte[1] = receiveData.GyX2;
   GyY.myByte[1] = receiveData.GyY2;
   GyZ.myByte[1] = receiveData.GyZ2;
-  Serial.print("a[x y z] g[x y z]:\t");
-  Serial.print(AcX.myInt16); Serial.print("\t");
-  Serial.print(AcY.myInt16); Serial.print("\t");
-  Serial.print(AcZ.myInt16); Serial.print("\t");
-  Serial.print(GyX.myInt16); Serial.print("\t");
-  Serial.print(GyY.myInt16); Serial.print("\t");
-  Serial.println(GyZ.myInt16);
+  //Serial.print("a[x y z] g[x y z]:\t");
+  //Serial.print(AcX.myInt16); Serial.print("\t");
+  //Serial.print(AcY.myInt16); Serial.print("\t");
+  //Serial.print(AcZ.myInt16); Serial.print("\t");
+  //Serial.print(GyX.myInt16); Serial.print("\t");
+  //Serial.print(GyY.myInt16); Serial.print("\t");
+  //Serial.println(GyZ.myInt16);
 }
 
 void NRF24_transmit() {

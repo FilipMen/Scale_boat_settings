@@ -26,6 +26,8 @@
 #include <RF24.h>
 #include <Servo.h>  //To create PWM signals we need this lybrary
 #define Debugging true
+#include <ArduinoJson.hpp>
+#include <ArduinoJson.h>
 
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
 RF24 radio(9, 10);  //CSN and CE pins
@@ -36,12 +38,12 @@ struct RXData {
   byte cLat2;
   byte cLat3;
   byte cLat4;
-  byte NS;
+  char NS;
   byte cLon1;
   byte cLon2;
   byte cLon3;
   byte cLon4;
-  byte EW;
+  char EW;
   byte AcX1;
   byte AcY1;
   byte AcZ1;
@@ -89,7 +91,7 @@ bool report = false;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   //Once again, begin and radio configuration
   if (radio.begin()) {
     Serial.println(F("radio hardware is not responding!!"));

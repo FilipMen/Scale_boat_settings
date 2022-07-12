@@ -7,11 +7,16 @@ void serialEvent() {
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
     if (inChar == '\n') {
+      Serial.print(inputString);
       if (inputString.substring(0, 6) == "$GPGLL") {
         Serial.print(inputString);
         if (getValue(inputString, ',', 6) == "A") {
           cLat.myfloat = getValue(inputString, ',', 1).toFloat();
           NS = getValue(inputString, ',', 2);
+          if (NS == "S"){
+            cLat.myfloat = -cLat.myfloat;
+          }
+          
           cLon.myfloat = getValue(inputString, ',', 3).toFloat();
           EW = getValue(inputString, ',', 4);
           timeStamp = getValue(inputString, ',', 5).toInt();

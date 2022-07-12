@@ -86,6 +86,11 @@ struct RXData {
   byte ch4;
 };
 
+// ================================================================
+// ===                    Variables ADS1115                     ===
+// ================================================================
+#include "ADS1X15.h"
+ADS1115 ADS(0x48);
 
 // State machine variables
 bool state = 0;
@@ -94,6 +99,9 @@ bool report = false;
 //Create a variable with the structure above and name it sent_data
 TXData sendData;
 RXData receiveData;
+
+// Timer
+unsigned long SampleT = 0;
 
 void setup() {
 
@@ -133,33 +141,41 @@ void setup() {
 
   //radio.startListening();
 
+
+  // ================================================================
+  // ===                    Variables ADS1115 SETUP               ===
+  // ================================================================
+  ADS.begin();
+  ADS.setWireClock(400000);
+  
   // ================================================================
   // ===                    Timer1 interrupt                      ===
   // ================================================================
-//  cli();//stop interrupts
-//  //set timer1 interrupt at 1Hz
-//  TCCR1A = 0;// set entire TCCR1A register to 0
-//  TCCR1B = 0;// same for TCCR1B
-//  TCNT1  = 0;//initialize counter value to 0
-//  // set compare match register for 1hz increments
-//  OCR1A = 6249;// = (16*10^6) / (1*1024) - 1 (must be <65536)
-//  // turn on CTC mode
-//  TCCR1B |= (1 << WGM12);
-//  // Set CS10 CS11 and CS12 bits
-//  //TCCR1B |= (0 << CS12) | (0 << CS11) | (1 << CS10); // No prescaling
-//  //TCCR1B |= (0 << CS12) | (1 << CS11) | (0 << CS10); // 8 prescaler
-//  //TCCR1B |= (0 << CS12) | (1 << CS11) | (1 << CS10); // 64 prescaler
-//  TCCR1B |= (1 << CS12) | (0 << CS11) | (0 << CS10); // 256 prescaler
-//  //TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10); // 1024 prescaler
-//  // enable timer compare interrupt
-//  TIMSK1 |= (1 << OCIE1A);
-//  sei();//allow interrupts
+  //  cli();//stop interrupts
+  //  //set timer1 interrupt at 1Hz
+  //  TCCR1A = 0;// set entire TCCR1A register to 0
+  //  TCCR1B = 0;// same for TCCR1B
+  //  TCNT1  = 0;//initialize counter value to 0
+  //  // set compare match register for 1hz increments
+  //  OCR1A = 6249;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  //  // turn on CTC mode
+  //  TCCR1B |= (1 << WGM12);
+  //  // Set CS10 CS11 and CS12 bits
+  //  //TCCR1B |= (0 << CS12) | (0 << CS11) | (1 << CS10); // No prescaling
+  //  //TCCR1B |= (0 << CS12) | (1 << CS11) | (0 << CS10); // 8 prescaler
+  //  //TCCR1B |= (0 << CS12) | (1 << CS11) | (1 << CS10); // 64 prescaler
+  //  TCCR1B |= (1 << CS12) | (0 << CS11) | (0 << CS10); // 256 prescaler
+  //  //TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10); // 1024 prescaler
+  //  // enable timer compare interrupt
+  //  TIMSK1 |= (1 << OCIE1A);
+  //  sei();//allow interrupts
+  SampleT = millis();
 }
 
 void loop() {
-  IMU_read();
-  //NRF24_transmit();
-  //NRF24_receive();
-  State_machine();
-  delay(100);
+  if (millis() - SampleT > 20) {
+    SampleT = millis();
+    IMU_read();
+    State_machine();
+  }
 }
