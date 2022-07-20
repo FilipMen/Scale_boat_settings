@@ -24,64 +24,103 @@
 #include <nRF24L01.h>
 #include "printf.h"
 #include <RF24.h>
-#include <Servo.h>  //To create PWM signals we need this lybrary
-#define Debugging true
+#include <ArduinoJson.hpp>
+#include <ArduinoJson.h>
+
+
+// ================================================================
+// ===                    Variables                             ===
+// ================================================================
+#define Debugging false
+unsigned long sampleT;
+#define DelayTime 50000
+#define NUMSEND 15
+
+
+union myFloat {
+  uint8_t myByte[4];
+  float myFloat;
+} cLat, cLon;
+
+union myInt16 {
+  uint8_t myByte[2];
+  int16_t myInt16;
+} numMessageRX, numMessageTX;
 
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
 RF24 radio(9, 10);  //CSN and CE pins
 
 // The sizeof this struct should not exceed 32 bytes
 struct RXData {
+  byte numMessage1;
+  byte numMessage2;
   byte cLat1;
   byte cLat2;
   byte cLat3;
   byte cLat4;
-  byte NS;
   byte cLon1;
   byte cLon2;
   byte cLon3;
   byte cLon4;
-  byte EW;
-  byte AcX1;
-  byte AcY1;
-  byte AcZ1;
-  byte GyX1;
-  byte GyY1;
-  byte GyZ1;
-  byte AcX2;
-  byte AcY2;
-  byte AcZ2;
-  byte GyX2;
-  byte GyY2;
-  byte GyZ2;
+  byte yaw1;
+  byte yaw2;
+  byte roll1;
+  byte roll2;
+  byte pitch1;
+  byte pitch2;
+  byte accX1;
+  byte accX2;
+  byte accY1;
+  byte accY2;
+  byte batCurr1;
+  byte batCurr2;
+  byte batVol1;
+  byte batVol2;
 };
 
 struct TXData {
+  byte numMessage1;
+  byte numMessage2;
   byte ch1;
   byte ch2;
   byte ch3;
-  byte ch4;
+  byte Mode;
 };
 
 RXData receiveData;
 TXData sendData;
+int16_t numMessageRX1 = 0;
 
-int timeStamp; // GPS time stamp
+String inputString = "";         // a String to hold incoming data
+bool stringComplete = false;  // whether the string is complete
+bool signalLost;
+byte countSignal = 0;
+#define DelayTime 50000
+// ================================================================
+// ===                    Variables GPS                         ===
+// ================================================================
 //cLat.myfloat = 0.0; // GPS latitud
 String NS = ""; // GPS North or Sur
 //cLon.myfloat = 0.0; // GPS  Longitud
 String EW = ""; // GPS East or Weast
 
-union myFloat {
-  uint8_t myByte[4];
-  float myfloat;
-} cLat, cLon;
+// ================================================================
+// ===                    Variables IMU                         ===
+// ================================================================
+//Direccion I2C de la IMU 9250
+myInt16 yaw, pitch, roll, accX, accY;
 
-union myInt16 {
-  uint8_t myByte[2];
-  int16_t myInt16;
-} AcX, AcY, AcZ, GyX, GyY, GyZ;
+// ================================================================
+// ===                    Variables ADS1115                     ===
+// ================================================================
+myInt16 batCurr;
+myInt16 batVol;
 
+
+byte PMW_motor1 = 0;
+byte PMW_motor2 = 0;
+byte rudder_angle = 0;
+byte controlMode = 0;
 // State machine variables
 byte state = 0;
 bool report = false;
@@ -89,7 +128,8 @@ bool report = false;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  inputString.reserve(200);
   //Once again, begin and radio configuration
   if (radio.begin()) {
     Serial.println(F("radio hardware is not responding!!"));
@@ -107,49 +147,18 @@ void setup()
   radio.openReadingPipe(1, address[0]); // using pipe 1
   //We start the radio comunication
   radio.startListening();
-
+  sampleT = micros();
 }
-
-/**************************************************/
 
 unsigned long lastRecvTime = 0;
 
-//We create the function that will read the data each certain time
-void receive_the_data()
-{
-
-
-}
-
-/**************************************************/
 
 void loop()
 {
+//  if (micros() - sampleT > DelayTime) {
+//    sampleT = micros();
+//    NRF24_transmit();
+//  }
   //Receive the radio data
-  state_machine();
   //NRF24_receive();
-  //NRF24_transmit();
-  //////////This small if will reset the data if signal is lost for 1 sec.
-  /////////////////////////////////////////////////////////////////////////
-  //  unsigned long now = millis();
-  //  if ( now - lastRecvTime > 1000 ) {
-  //    // signal lost?
-  //    //reset_the_Data();
-  //    Serial.println("Signal lost");
-  //    //Go up and change the initial values if you want depending on
-  //    //your aplications. Put 0 for throttle in case of drones so it won't
-  //    //fly away
-  //  }
-  //
-  //delay(100);
-  //Creathe the PWM signals
-  //  channel_1.writeMicroseconds(ch1_value);
-  //  channel_2.writeMicroseconds(ch2_value);
-  //  channel_3.writeMicroseconds(ch3_value);
-  //  channel_4.writeMicroseconds(ch4_value);
-  //  channel_5.writeMicroseconds(ch5_value);
-  //  channel_6.writeMicroseconds(ch6_value);
-  //  channel_7.writeMicroseconds(ch7_value);
-
-
 }//Loop end

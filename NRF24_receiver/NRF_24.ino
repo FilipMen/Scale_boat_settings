@@ -1,57 +1,66 @@
 void NRF24_receive() {
   while ( radio.available() ) {
     radio.read(&receiveData, sizeof(RXData));
-    lastRecvTime = millis(); //Here we receive the data
+    // Verify the message
+    numMessageRX.myByte[0] = receiveData.numMessage1;
+    numMessageRX.myByte[1] = receiveData.numMessage2;
+    if (numMessageRX1 != numMessageRX.myInt16) {
+      if(numMessageRX.myInt16 - numMessageRX1 >1){
+        Serial.println("¡¡¡¡ MESSAGE LOST !!!!!");
+      }
+      numMessageRX1 = numMessageRX.myInt16;
+      cLat.myByte[0] = receiveData.cLat1;
+      cLat.myByte[1] = receiveData.cLat2;
+      cLat.myByte[2] = receiveData.cLat3;
+      cLat.myByte[3] = receiveData.cLat4;
+      cLon.myByte[0] = receiveData.cLon1;
+      cLon.myByte[1] = receiveData.cLon2;
+      cLon.myByte[2] = receiveData.cLon3;
+      cLon.myByte[3] = receiveData.cLon4;
+      yaw.myByte[0] = receiveData.yaw1;
+      yaw.myByte[1] = receiveData.yaw2;
+      roll.myByte[0] = receiveData.roll1;
+      roll.myByte[1] = receiveData.roll2;
+      pitch.myByte[0] = receiveData.pitch1;
+      pitch.myByte[1] = receiveData.pitch2;
+      accX.myByte[0] = receiveData.accX1;
+      accX.myByte[1] = receiveData.accX2;
+      accY.myByte[0] = receiveData.accY1;
+      accY.myByte[1] = receiveData.accY2;
+      batCurr.myByte[0] = receiveData.batCurr1;
+      batCurr.myByte[1] = receiveData.batCurr2;
+      batVol.myByte[0] = receiveData.batVol1;
+      batVol.myByte[1] = receiveData.batVol2;
+      SerializeObject();
+    }
   }
-  // This device is a TX node
-  cLat.myByte[0] = receiveData.cLat1;
-  cLat.myByte[1] = receiveData.cLat2;
-  cLat.myByte[2] = receiveData.cLat3;
-  cLat.myByte[3] = receiveData.cLat4;
-  NS = receiveData.NS;
-  cLon.myByte[0] = receiveData.cLon1;
-  cLon.myByte[1] = receiveData.cLon2;
-  cLon.myByte[2] = receiveData.cLon3;
-  cLon.myByte[3] = receiveData.cLon4;
-  EW = receiveData.EW;
-  AcX.myByte[0] = receiveData.AcX1;
-  AcY.myByte[0] = receiveData.AcY1;
-  AcZ.myByte[0] = receiveData.AcZ1;
-  AcX.myByte[1] = receiveData.AcX2;
-  AcY.myByte[1] = receiveData.AcY2;
-  AcZ.myByte[1] = receiveData.AcZ2;
-  GyX.myByte[0] = receiveData.GyX1;
-  GyY.myByte[0] = receiveData.GyY1;
-  GyZ.myByte[0] = receiveData.GyZ1;
-  GyX.myByte[1] = receiveData.GyX2;
-  GyY.myByte[1] = receiveData.GyY2;
-  GyZ.myByte[1] = receiveData.GyZ2;
-  Serial.print("a[x y z] g[x y z]:\t");
-  Serial.print(AcX.myInt16); Serial.print("\t");
-  Serial.print(AcY.myInt16); Serial.print("\t");
-  Serial.print(AcZ.myInt16); Serial.print("\t");
-  Serial.print(GyX.myInt16); Serial.print("\t");
-  Serial.print(GyY.myInt16); Serial.print("\t");
-  Serial.println(GyZ.myInt16);
+
 }
 
 void NRF24_transmit() {
+  numMessageTX.myInt16 ++;
   // This device is a TX node
-  sendData.ch1 = 50;
-  sendData.ch2 = 100;
-  sendData.ch3 = 150;
-  sendData.ch4 = 200;
+  sendData.numMessage1 = numMessageTX.myByte[0];
+  sendData.numMessage2 = numMessageTX.myByte[0];
+  sendData.ch1 = rudder_angle;
+  sendData.ch2 = PMW_motor1;
+  sendData.ch3 = PMW_motor2;
+  sendData.Mode = controlMode;
+  radio.stopListening(); 
   unsigned long start_timer = micros();                    // start the timer
-  report = radio.write(&sendData, sizeof(TXData));
-  unsigned long end_timer = micros();                      // end the timer
-  if (Debugging) {
-    if (report) {
-      Serial.print(F("Transmission successful! "));          // payload was delivered
-      Serial.print(F("Time to transmit = "));
-      Serial.print(end_timer - start_timer);                 // print the timer result
-      Serial.println(F(" us. Sent: "));
-    } else {
-      Serial.println(F("Transmission failed or timed out")); // payload was not delivered
-    }
+  for (int i = 0; i < NUMSEND; i++) {
+    report = radio.write(&sendData, sizeof(TXData));
   }
+  unsigned long end_timer = micros();                      // end the timer
+#if (Debugging)
+  if (report) {
+    Serial.print(F("Transmission successful! "));          // payload was delivered
+    Serial.print(F("Time to transmit = "));
+    Serial.print(end_timer - start_timer);                 // print the timer result
+    Serial.println(F(" us. Sent: "));
+  } else {
+    Serial.println(F("Transmission failed or timed out")); // payload was not delivered
+  }
+#endif
+  radio.startListening();
 }

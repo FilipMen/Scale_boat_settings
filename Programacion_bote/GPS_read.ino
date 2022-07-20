@@ -1,23 +1,36 @@
-void serialEvent() {
-  while (Serial.available()) {
+void serialEvent1() {
+  while (Serial1.available()) {
     // get the new byte:
-    char inChar = (char)Serial.read();
+    char inChar = (char)Serial1.read();
     // add it to the inputString:
     inputString += inChar;
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
     if (inChar == '\n') {
+#if (Debugging)
+      Serial.print(inputString);
+#endif
       if (inputString.substring(0, 6) == "$GPGLL") {
         Serial.print(inputString);
         if (getValue(inputString, ',', 6) == "A") {
-          cLat.myfloat = getValue(inputString, ',', 1).toFloat();
+          // Get Latitude from the GPS
+          cLat.myInt32 = getValue(inputString, ',', 1).toFloat()*100000;
           NS = getValue(inputString, ',', 2);
-          cLon.myfloat = getValue(inputString, ',', 3).toFloat();
+          if (NS == "S") {
+            cLat.myInt32 = -cLat.myInt32;
+          }
+          // Get Longitud from the GPS
+          cLon.myInt32 = getValue(inputString, ',', 3).toFloat()*100000;
           EW = getValue(inputString, ',', 4);
+          if (EW == "W") {
+            cLon.myInt32 = -cLon.myInt32;
+          }
           timeStamp = getValue(inputString, ',', 5).toInt();
         }
-        if (getValue(inputString, ',', 6) == "V") {
+        else if (getValue(inputString, ',', 6) == "V") {
+#if (Debugging)
           Serial.println("Invalid");
+#endif
         }
       }
       // clear the string:
@@ -25,6 +38,12 @@ void serialEvent() {
     }
   }
 }
+
+//void serialEvent() {
+//  while (Serial.available()) {
+//    Serial.println(Serial.read());
+//  }
+//}
 
 
 String getValue(String data, char separator, int index)
