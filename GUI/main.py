@@ -39,6 +39,8 @@ from scr.widgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 import folium
 import io
+import pandas as pd
+import csv
 import numpy as np
 from PyQt5.QtWidgets import QApplication
 from pyqtgraph.opengl import GLViewWidget, MeshData, GLMeshItem
@@ -159,12 +161,18 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "Roll"))
 
         # ************* QT Designer **************************
+        self.map1 = folium.Map(location=[9.22636, -74.74316], zoom_start=20, tiles='CartoDB Positron')
+        folium.Marker(location=[9.22636, -74.74316]).add_to(self.map1)
+        self.data = io.BytesIO()
+        self.map1.save(self.data, close_file=False)
+        self.map.setHtml(self.data.getvalue().decode())
 
+
+    def updateMap(self, Location):
         # MAP
-        map = folium.Map(location=[6.1981000, -75.5805271], zoom_start=20, tiles='CartoDB Positron')
-        data = io.BytesIO()
-        map.save(data, close_file=False)
-        self.map.setHtml(data.getvalue().decode())
+        folium.Marker(location=Location).add_to(self.map1)
+        self.map1.save(self.data, close_file=False)
+        self.map.setHtml(self.data.getvalue().decode())
 
 from stl import mesh
 from PyQt5 import QtWebEngineWidgets
@@ -176,9 +184,18 @@ from PyQt5 import QtWebEngineWidgets
 
 # FUNCTION CATEGORY 1 -----------------------------------------
 from guiLoop import guiLoop # https://gist.github.com/niccokunzmann/8673951
+
 @guiLoop
 def Main_loop():
+    coordenates = pd.read_csv('coordsResuMP.txt', sep=" ", header=None)
+    length = len(coordenates)
+    cont = 0
     while True:
+        if (cont<length):
+            ui.updateMap(list(coordenates.loc[cont]))
+            print(list(coordenates.loc[cont]))
+            cont += 1
+
         yield 1
 
 
