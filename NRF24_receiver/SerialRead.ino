@@ -8,6 +8,7 @@ void serialEvent() {
     // do something about it:
     if (inChar == '\n') {
       DeserializeObject(inputString);
+#if (Debugging)
       String json;
       StaticJsonDocument<300> doc;
       doc["1"] = rudder_angle;
@@ -16,6 +17,7 @@ void serialEvent() {
       doc["m"] = controlMode;
       serializeJson(doc, json);
       Serial.println(json);
+#endif
       NRF24_transmit();
       inputString = "";
     }

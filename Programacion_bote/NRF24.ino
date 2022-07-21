@@ -59,6 +59,7 @@ void NRF24_receive() {
       PMW_motor1 = receiveData.ch2;
       PMW_motor2 = receiveData.ch3;
       controlMode = receiveData.Mode;
+      
 #if (!Debugging)
       String json;
       StaticJsonDocument<300> doc;

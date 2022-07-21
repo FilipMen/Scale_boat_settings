@@ -125,9 +125,6 @@ struct RXData {
 //#define ThMotor1 13 // Pin Motor 1 control
 //#define ThMotor2 15 // Pin Motor 2 control
 
-Servo rudder;
-Servo motor1;
-Servo motor2;
 byte PMW_motor1 = 0;
 byte PMW_motor2 = 0;
 byte PMW_motor1_1 = 0;
@@ -140,10 +137,6 @@ bool state = 0;
 byte controlMode = 0;
 bool report = false;
 
-unsigned int servo_counter = 0;
-byte rudder_delay = 100;
-byte motor1_delay = 100;
-byte motor2_delay = 100;
 
 //Create a variable with the structure above and name it sent_data
 TXData sendData;
@@ -156,9 +149,6 @@ void setup() {
   // ================================================================
   pinMode(Selector, OUTPUT);
   pinMode(EnableBoat, OUTPUT);
-  pinMode(RudderPin, OUTPUT);
-  pinMode(ThMotor1, OUTPUT);
-  pinMode(ThMotor2, OUTPUT);
   digitalWrite(EnableBoat, HIGH);
 
   // ================================================================
@@ -227,33 +217,9 @@ void setup() {
   // ================================================================
   Serial2.begin(115200);
 
-
-  // ================================================================
-  // ===                    Control Setup                         ===
-  // ================================================================
-  //set timer2 interrupt at 8kHz
-  TCCR2A = 0;// set entire TCCR2A register to 0
-  TCCR2B = 0;// same for TCCR2B
-  TCNT2  = 0;//initialize counter value to 0
-  // set compare match register for 8khz increments
-  OCR2A = 4;// = (16*10^6) / (8000*8) - 1 (must be <256)
-  // turn on CTC mode
-  TCCR2A |= (1 << WGM21);
-  // Set CS21 bit for 8 prescaler
-  //TCCR2B |= (0 << CS22) | (0 << CS21) | (1 << CS20); // No prescaling   
-  //TCCR2B |= (0 << CS22) | (1 << CS21) | (0 << CS20); // 8 prescaler
-  TCCR2B |= (0 << CS22) | (1 << CS21) | (1 << CS20); // 32 prescaler
-  //TCCR2B |= (1 << CS22) | (0 << CS21) | (0 << CS20); // 64 prescaler
-  // enable timer compare interrupt
-  TIMSK2 |= (1 << OCIE2A);
-
   // ================================================================
   // ===                    Program begin                         ===
   // ================================================================
-  //rudder.write(1500);
-  motor1.write(90);
-  //motor2.writeMicroseconds(1000);
-
   digitalWrite(Selector, HIGH);
   digitalWrite(EnableBoat, LOW);
 
@@ -265,7 +231,6 @@ void loop() {
   // ================================================================
   // ===                    Sample time                           ===
   // ================================================================
-  motor1.write(rudder_angle);
   if (micros() - sampleT > DelayTime) {
     sampleT = micros();
     if (countSignal > NUMLOST) {

@@ -37,9 +37,9 @@ unsigned long sampleT;
 #define NUMSEND 15
 
 
-union myFloat {
+union myInt32 {
   uint8_t myByte[4];
-  float myFloat;
+  int32_t myInt32;
 } cLat, cLon;
 
 union myInt16 {
@@ -155,10 +155,10 @@ unsigned long lastRecvTime = 0;
 
 void loop()
 {
-//  if (micros() - sampleT > DelayTime) {
-//    sampleT = micros();
-//    NRF24_transmit();
-//  }
+  //  if (micros() - sampleT > DelayTime) {
+  //    sampleT = micros();
+  //    NRF24_transmit();
+  //  }
   //Receive the radio data
-  //NRF24_receive();
+  NRF24_receive();
 }//Loop end
