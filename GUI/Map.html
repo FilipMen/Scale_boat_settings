@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Google Maps Tutorial</title>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.19.0.min.js"></script>
+  </head>
+  <body>
+  <div class="container">
+    <div id="map-canvas" style="width:1000px;height:500px"></div>
+  </div>
+
+    <script>
+    window.lat = 37.7850;
+    window.lng = -122.4383;
+
+    var map;
+    var mark;
+    var lineCoords = [];
+
+    var initialize = function() {
+      map  = new google.maps.Map(document.getElementById('map-canvas'), {center:{lat:lat,lng:lng},zoom:12});
+      mark = new google.maps.Marker({position:{lat:lat, lng:lng}, map:map});
+    };
+
+    window.initialize = initialize;
+
+    var redraw = function(payload) {
+      if(payload.message.lat){
+      lat = payload.message.lat;
+      lng = payload.message.lng;
+
+      map.setCenter({lat:lat, lng:lng, alt:0});
+      mark.setPosition({lat:lat, lng:lng, alt:0});
+      };
+    };
+
+    var pnChannel = "raspi-tracker";
+
+    var pubnub = new PubNub({
+      publishKey:   'pub-c-538b35ba-c872-43c7-8d00-6e6b98ce8d18',
+      subscribeKey: 'sub-c-700df5b3-5efa-4d2a-89d6-f51d59e758a2'
+    });
+    pubnub.subscribe({channels: [pnChannel]});
+    pubnub.addListener({message:redraw});
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCxPANJK7Fbh3kiSV2wgSWQMJpl3SHmo_Q&callback=initialize"></script>
+  </body>
+</html>
