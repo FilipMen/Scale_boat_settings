@@ -11,16 +11,29 @@ void NRF24_transmit() {
   sendData.cLon2 = cLon.myByte[1];
   sendData.cLon3 = cLon.myByte[2];
   sendData.cLon4 = cLon.myByte[3];
-  sendData.yaw1 = yaw.myByte[0];
-  sendData.yaw2 = yaw.myByte[1];
-  sendData.roll1 = roll.myByte[0];
-  sendData.roll2 = roll.myByte[1];
-  sendData.pitch1 = pitch.myByte[0];
-  sendData.pitch2 = pitch.myByte[1];
-  sendData.accX1 = accX.myByte[0];
-  sendData.accX2 = accX.myByte[1];
-  sendData.accY1 = accY.myByte[0];
-  sendData.accY2 = accY.myByte[1];
+
+  sendData.ax1 = ax.myByte[0];
+  sendData.ax2 = ax.myByte[1];
+  sendData.ay1 = ay.myByte[0];
+  sendData.ay2 = ay.myByte[1];
+  sendData.az1 = az.myByte[0];
+  sendData.az2 = az.myByte[1];
+
+  sendData.gx1 = gx.myByte[0];
+  sendData.gx2 = gx.myByte[1];
+  sendData.gy1 = gy.myByte[0];
+  sendData.gy2 = gy.myByte[1];
+  sendData.gz1 = gz.myByte[0];
+  sendData.gz2 = gz.myByte[1];
+
+  sendData.mx1 = mx.myByte[0];
+  sendData.mx2 = mx.myByte[1];
+  sendData.my1 = my.myByte[0];
+  sendData.my2 = my.myByte[1];
+  sendData.mz1 = mz.myByte[0];
+  sendData.mz2 = mz.myByte[1];
+
+
   sendData.batCurr1 = batCurr.myByte[0];
   sendData.batCurr2 = batCurr.myByte[1];
   sendData.batVol1 = batVol.myByte[0];
@@ -60,7 +73,7 @@ void NRF24_receive() {
       PMW_motor2 = receiveData.ch3;
       controlMode = receiveData.Mode;
       
-#if (!Debugging)
+#if (false)
       String json;
       StaticJsonDocument<300> doc;
       doc["1"] = rudder_angle;
@@ -90,6 +103,7 @@ void NRF24_receive() {
         colorWipe(strip1.Color(255,   255,   255), 0);    // Green
       }
       ADC_read();
+      IMU_read();
       delay(15);
       NRF24_transmit();
 #if(Debugging)

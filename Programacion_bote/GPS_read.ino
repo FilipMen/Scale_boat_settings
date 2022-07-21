@@ -7,11 +7,11 @@ void serialEvent1() {
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
     if (inChar == '\n') {
-#if (Debugging)
+#if (false)
       Serial.print(inputString);
 #endif
       if (inputString.substring(0, 6) == "$GPGLL") {
-        Serial.print(inputString);
+        //Serial.print(inputString);
         if (getValue(inputString, ',', 6) == "A") {
           // Get Latitude from the GPS
           cLat.myInt32 = getValue(inputString, ',', 1).toFloat()*100000;
@@ -28,7 +28,7 @@ void serialEvent1() {
           timeStamp = getValue(inputString, ',', 5).toInt();
         }
         else if (getValue(inputString, ',', 6) == "V") {
-#if (Debugging)
+#if (false)
           Serial.println("Invalid");
 #endif
         }
