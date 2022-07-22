@@ -306,13 +306,13 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
-         <widget class="timePlot" name="Roll" native="true"/>
+         <widget class="timePlot1" name="Roll" native="true"/>
         </item>
         <item row="0" column="1">
-         <widget class="timePlot" name="Pitch" native="true"/>
+         <widget class="timePlot1" name="Pitch" native="true"/>
         </item>
         <item row="0" column="2">
-         <widget class="timePlot" name="Yaw" native="true"/>
+         <widget class="timePlot1" name="Yaw" native="true"/>
         </item>
        </layout>
       </widget>
@@ -694,6 +694,12 @@
    <class>Toggle</class>
    <extends>QCheckBox</extends>
    <header>qtwidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>timePlot1</class>
+   <extends>QWidget</extends>
+   <header>timeplot1.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
