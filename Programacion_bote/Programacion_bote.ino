@@ -54,7 +54,7 @@ byte countSignal = 0;
 #define    ACC_FULL_SCALE_8_G        0x10
 #define    ACC_FULL_SCALE_16_G       0x18
 
-myInt16 ax,ay,az,gx,gy,gz,mx,my,mz;
+myInt16 ax, ay, az, gx, gy, gz, mx, my, mz;
 
 // ================================================================
 // ===                    Variables GPS                         ===
@@ -91,8 +91,6 @@ bool role = true;  // true = TX role, false = RX role
 
 // The sizeof this struct should not exceed 32 bytes
 struct TXData {
-  byte numMessage1;
-  byte numMessage2;
   byte cLat1;
   byte cLat2;
   byte cLat3;
@@ -126,8 +124,6 @@ struct TXData {
 };
 
 struct RXData {
-  byte numMessage1;
-  byte numMessage2;
   byte ch1;
   byte ch2;
   byte ch3;
@@ -213,16 +209,17 @@ void setup() {
     Serial.println(F("Radio correct!!"));
     colorWipe(strip1.Color(0,   255,   0), 0);    // Red
   }
-  radio.setAutoAck(true);
+  radio.setAutoAck(false);
+  radio.enableAckPayload();               // Allow optional ack payloads
   radio.setDataRate(RF24_250KBPS);
   radio.setPALevel(RF24_PA_MAX);  // RF24_PA_MAX is default.
-  radio.setPayloadSize(sizeof(TXData));
+  radio.setPayloadSize(sizeof(RXData));
   // set the TX address of the RX node into the TX pipe
-  radio.openWritingPipe(address[0]);     // always uses pipe 0
+  radio.openWritingPipe(address[1]);     // always uses pipe 0
   // set the RX address of the TX node into a RX pipe
-  radio.openReadingPipe(1, address[1]); // using pipe 1
+  radio.openReadingPipe(1, address[0]); // using pipe 1
+  //We start the radio comunication
   radio.startListening();
-
 
   // ================================================================
   // ===                    Control Setup                         ===

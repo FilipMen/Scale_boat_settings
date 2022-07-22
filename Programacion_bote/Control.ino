@@ -7,7 +7,16 @@ void Control_boat() {
   //filter_PWM = LowPassFilter(PMW_motor2, PMW_motor2_1, 1, DelayTime / 1000000.0, Tau);
   //PMW_motor2_1 = filter_PWM;
   //us_motor = 1000 + filter_PWM / 255.0 * 1000;
-
+#if (false)
+    String json;
+    StaticJsonDocument<300> doc;
+    doc["1"] = rudder_angle;
+    doc["2"] = PMW_motor1;
+    doc["3"] = PMW_motor2;
+    doc["m"] = controlMode;
+    serializeJson(doc, json);
+    Serial.println(json);
+#endif
   String json;
   StaticJsonDocument<30> doc;
   doc["p1"] = rudder_angle;
