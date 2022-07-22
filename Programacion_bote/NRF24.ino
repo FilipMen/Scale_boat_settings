@@ -62,11 +62,6 @@ void Update_variables() {
   sendData.my2 = my.myByte[1];
   sendData.mz1 = mz.myByte[0];
   sendData.mz2 = mz.myByte[1];
-<<<<<<< HEAD
-=======
-
-
->>>>>>> parent of 02768ef (IMU_ok)
   sendData.batCurr1 = batCurr.myByte[0];
   sendData.batCurr2 = batCurr.myByte[1];
   sendData.batVol1 = batVol.myByte[0];
