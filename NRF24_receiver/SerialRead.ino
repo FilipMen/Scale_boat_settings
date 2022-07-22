@@ -18,6 +18,7 @@ void serialEvent() {
       serializeJson(doc, json);
       Serial.println(json);
 #endif
+      NRF24_transmit();
       inputString = "";
     }
   }
@@ -34,5 +35,4 @@ void DeserializeObject(String json)
   PMW_motor1 = doc["2"];
   PMW_motor2 = doc["3"];
   controlMode = doc["m"];
-  NRF24_transmit();
 }

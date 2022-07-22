@@ -110,8 +110,25 @@ String EW = ""; // GPS East or Weast
 // ===                    Variables IMU                         ===
 // ================================================================
 //Direccion I2C de la IMU 9250
-myInt16 ax, ay, az, gx, gy, gz, mx, my, mz;
-
+myInt16 ax,ay,az,gx,gy,gz,mx,my,mz;
+byte ax1 = 0;
+byte ax2 = 0;
+byte ay1 = 0;
+byte ay2 = 0;
+byte az1 = 0;
+byte az2 = 0;
+byte gx1 = 0;
+byte gx2 = 0;
+byte gy1 = 0;
+byte gy2 = 0;
+byte gz1 = 0;
+byte gz2 = 0;
+byte mx1 = 0;
+byte mx2 = 0;
+byte my1 = 0;
+byte my2 = 0;
+byte mz1 = 0;
+byte mz2 = 0;
 // ================================================================
 // ===                    Variables ADS1115                     ===
 // ================================================================
@@ -140,8 +157,11 @@ void setup()
     Serial.println(F("Radio correct!!"));
   }
   radio.setAutoAck(false);
+<<<<<<< HEAD
   radio.enableAckPayload();               // Allow optional ack payloads
   radio.setRetries(0, 15);                // Smallest time between retries, max no. of retries
+=======
+>>>>>>> parent of 02768ef (IMU_ok)
   radio.setDataRate(RF24_250KBPS);
   radio.setPALevel(RF24_PA_MAX);  // RF24_PA_MAX is default.
   radio.setPayloadSize(sizeof(RXData));
