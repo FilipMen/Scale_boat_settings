@@ -36,7 +36,7 @@ BaudRates = ['2400','4800','9600','19200','57600','115200']
 
 pnChannel = "raspi-tracker"
 
-# coor = np.genfromtxt("coordsResuMP.txt", delimiter = " ", skip_header = 1)
+coor = np.genfromtxt("coordsResuMP.txt", delimiter = " ", skip_header = 1)
 pnconfig = PNConfiguration()
 pnconfig.publish_key = "pub-c-538b35ba-c872-43c7-8d00-6e6b98ce8d18"
 pnconfig.subscribe_key = "sub-c-700df5b3-5efa-4d2a-89d6-f51d59e758a2"
@@ -410,7 +410,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "AccX:"))
         self.label_2.setText(_translate("MainWindow", "Roll:"))
         #-------------------------- QT designer -------------------------------#
-        self.webEngineView.load(QUrl("file:///C:/Users/juanm/Documents/GitHub/Scale_boat_settings/GUI/Map.html"))
+        self.webEngineView.load(QUrl("file:///C:/Users/mendo/OneDrive%20-%20Universidad%20EAFIT/Energetica%202030/Barco%20Fluvial/TG%20-%20embarcaci%C3%B3n/Maps/Map.html"))
         self.PWM1.setText(str(self.verticalSlider.value()))
         self.setRuderValue()
         self.verticalSlider.valueChanged.connect(self.setMotor1Value)

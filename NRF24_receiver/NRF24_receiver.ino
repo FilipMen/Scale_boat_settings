@@ -62,29 +62,22 @@ struct RXData {
   byte cLon2;
   byte cLon3;
   byte cLon4;
-  byte ax1;
-  byte ax2;
-  byte ay1;
-  byte ay2;
-  byte az1;
-  byte az2;
-  byte gx1;
-  byte gx2;
-  byte gy1;
-  byte gy2;
-  byte gz1;
-  byte gz2;
-  byte mx1;
-  byte mx2;
-  byte my1;
-  byte my2;
-  byte mz1;
-  byte mz2;
+  byte yaw1;
+  byte yaw2;
+  byte roll1;
+  byte roll2;
+  byte pitch1;
+  byte pitch2;
+  byte accX1;
+  byte accX2;
+  byte accY1;
+  byte accY2;
   byte batCurr1;
   byte batCurr2;
   byte batVol1;
   byte batVol2;
 };
+
 struct TXData {
   byte numMessage1;
   byte numMessage2;
@@ -115,25 +108,8 @@ String EW = ""; // GPS East or Weast
 // ===                    Variables IMU                         ===
 // ================================================================
 //Direccion I2C de la IMU 9250
-myInt16 ax,ay,az,gx,gy,gz,mx,my,mz;
-byte ax1 = 0;
-byte ax2 = 0;
-byte ay1 = 0;
-byte ay2 = 0;
-byte az1 = 0;
-byte az2 = 0;
-byte gx1 = 0;
-byte gx2 = 0;
-byte gy1 = 0;
-byte gy2 = 0;
-byte gz1 = 0;
-byte gz2 = 0;
-byte mx1 = 0;
-byte mx2 = 0;
-byte my1 = 0;
-byte my2 = 0;
-byte mz1 = 0;
-byte mz2 = 0;
+myInt16 yaw, pitch, roll, accX, accY;
+
 // ================================================================
 // ===                    Variables ADS1115                     ===
 // ================================================================
@@ -179,10 +155,10 @@ unsigned long lastRecvTime = 0;
 
 void loop()
 {
-    if (micros() - sampleT > DelayTime) {
-      sampleT = micros();
-      NRF24_transmit();
-    }
+  //  if (micros() - sampleT > DelayTime) {
+  //    sampleT = micros();
+  //    NRF24_transmit();
+  //  }
   //Receive the radio data
   NRF24_receive();
 }//Loop end

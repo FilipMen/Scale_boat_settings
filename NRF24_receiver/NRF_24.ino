@@ -17,25 +17,16 @@ void NRF24_receive() {
       cLon.myByte[1] = receiveData.cLon2;
       cLon.myByte[2] = receiveData.cLon3;
       cLon.myByte[3] = receiveData.cLon4;
-      ax.myByte[0] = receiveData.ax1;
-      ax.myByte[1] = receiveData.ax2;
-      ay.myByte[0] = receiveData.ay1;
-      ay.myByte[1] = receiveData.ay2;
-      az.myByte[0] = receiveData.az1;
-      az.myByte[1] = receiveData.az2;
-      gx.myByte[0] = receiveData.gx1;
-      gx.myByte[1] = receiveData.gx2;
-      gy.myByte[0] = receiveData.gy1;
-      gy.myByte[1] = receiveData.gy2;
-      gz.myByte[0] = receiveData.gz1;
-      gz.myByte[1] = receiveData.gz2;
-      mx.myByte[0] = receiveData.mx1;
-      mx.myByte[1] = receiveData.mx2;
-      my.myByte[0] = receiveData.my1;
-      my.myByte[1] = receiveData.my2;
-      mz.myByte[0] = receiveData.mz1;
-      mz.myByte[1] = receiveData.mz2;
-      
+      yaw.myByte[0] = receiveData.yaw1;
+      yaw.myByte[1] = receiveData.yaw2;
+      roll.myByte[0] = receiveData.roll1;
+      roll.myByte[1] = receiveData.roll2;
+      pitch.myByte[0] = receiveData.pitch1;
+      pitch.myByte[1] = receiveData.pitch2;
+      accX.myByte[0] = receiveData.accX1;
+      accX.myByte[1] = receiveData.accX2;
+      accY.myByte[0] = receiveData.accY1;
+      accY.myByte[1] = receiveData.accY2;
       batCurr.myByte[0] = receiveData.batCurr1;
       batCurr.myByte[1] = receiveData.batCurr2;
       batVol.myByte[0] = receiveData.batVol1;
@@ -61,7 +52,7 @@ void NRF24_transmit() {
     report = radio.write(&sendData, sizeof(TXData));
   }
   unsigned long end_timer = micros();                      // end the timer
-#if (false)
+#if (Debugging)
   if (report) {
     Serial.print(F("Transmission successful! "));          // payload was delivered
     Serial.print(F("Time to transmit = "));
