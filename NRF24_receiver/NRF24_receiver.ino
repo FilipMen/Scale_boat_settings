@@ -45,13 +45,15 @@ union myInt32 {
 union myInt16 {
   uint8_t myByte[2];
   int16_t myInt16;
-};
+} numMessageRX, numMessageTX;
 
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
 RF24 radio(9, 10);  //CSN and CE pins
 
 // The sizeof this struct should not exceed 32 bytes
 struct RXData {
+  byte numMessage1;
+  byte numMessage2;
   byte cLat1;
   byte cLat2;
   byte cLat3;
@@ -84,6 +86,8 @@ struct RXData {
   byte batVol2;
 };
 struct TXData {
+  byte numMessage1;
+  byte numMessage2;
   byte ch1;
   byte ch2;
   byte ch3;
@@ -92,6 +96,7 @@ struct TXData {
 
 RXData receiveData;
 TXData sendData;
+int16_t numMessageRX1 = 0;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
@@ -139,9 +144,7 @@ void setup()
   else {
     Serial.println(F("Radio correct!!"));
   }
-  radio.setAutoAck(false);
-  radio.enableAckPayload();               // Allow optional ack payloads
-  radio.setRetries(0, 15);                // Smallest time between retries, max no. of retries
+  radio.setAutoAck(true);
   radio.setDataRate(RF24_250KBPS);
   radio.setPALevel(RF24_PA_MAX);  // RF24_PA_MAX is default.
   radio.setPayloadSize(sizeof(RXData));
@@ -159,10 +162,10 @@ unsigned long lastRecvTime = 0;
 
 void loop()
 {
-    if (micros() - sampleT > DelayTime) {
-      sampleT = micros();
-      NRF24_transmit();
-    }
+  //  if (micros() - sampleT > DelayTime) {
+  //    sampleT = micros();
+  //    NRF24_transmit();
+  //  }
   //Receive the radio data
   NRF24_receive();
 }//Loop end
