@@ -39,6 +39,12 @@ void serialEvent1() {
   }
 }
 
+//void serialEvent() {
+//  while (Serial.available()) {
+//    Serial.println(Serial.read());
+//  }
+//}
+
 
 String getValue(String data, char separator, int index)
 {

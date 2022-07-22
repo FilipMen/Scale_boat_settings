@@ -33,6 +33,7 @@ void NRF24_transmit() {
   sendData.mz1 = mz.myByte[0];
   sendData.mz2 = mz.myByte[1];
 
+
   sendData.batCurr1 = batCurr.myByte[0];
   sendData.batCurr2 = batCurr.myByte[1];
   sendData.batVol1 = batVol.myByte[0];
