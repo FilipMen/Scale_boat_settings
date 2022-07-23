@@ -10,6 +10,8 @@ void NRF24_transmit() {
   sendData.cLon2 = cLon.myByte[1];
   sendData.cLon3 = cLon.myByte[2];
   sendData.cLon4 = cLon.myByte[3];
+  sendData.vel1 = velocity.myByte[0];
+  sendData.vel2 = velocity.myByte[1];
 
   sendData.ax1 = ax.myByte[0];
   sendData.ax2 = ax.myByte[1];
@@ -35,12 +37,11 @@ void NRF24_transmit() {
 
   sendData.batCurr1 = batCurr.myByte[0];
   sendData.batCurr2 = batCurr.myByte[1];
-  sendData.batVol1 = batVol.myByte[0];
-  sendData.batVol2 = batVol.myByte[1];
+  sendData.batVol = batVol;
   unsigned long start_timer = micros();                    // start the timer
   radio.stopListening();
   for (int i = 0; i < NUMSEND; i++) {
-    report = radio.write(&sendData, sizeof(TXData));
+    bool report = radio.write(&sendData, sizeof(TXData));
   }
   unsigned long end_timer = micros();                      // end the timer
 #if (Debugging)

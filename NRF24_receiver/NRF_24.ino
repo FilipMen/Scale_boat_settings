@@ -13,6 +13,8 @@ void NRF24_receive() {
       cLon.myByte[1] = receiveData.cLon2;
       cLon.myByte[2] = receiveData.cLon3;
       cLon.myByte[3] = receiveData.cLon4;
+      velocity.myByte[0] = receiveData.vel1;
+      velocity.myByte[1] = receiveData.vel2;
       ax.myByte[0] = receiveData.ax1;
       ax.myByte[1] = receiveData.ax2;
       ay.myByte[0] = receiveData.ay1;
@@ -31,11 +33,10 @@ void NRF24_receive() {
       my.myByte[1] = receiveData.my2;
       mz.myByte[0] = receiveData.mz1;
       mz.myByte[1] = receiveData.mz2;
-      
+
       batCurr.myByte[0] = receiveData.batCurr1;
       batCurr.myByte[1] = receiveData.batCurr2;
-      batVol.myByte[0] = receiveData.batVol1;
-      batVol.myByte[1] = receiveData.batVol2;
+      batVol = receiveData.batVol;
       SerializeObject();
     }
   }
@@ -50,7 +51,7 @@ void NRF24_transmit() {
   sendData.ch2 = PMW_motor1;
   sendData.ch3 = PMW_motor2;
   sendData.Mode = controlMode;
-  radio.stopListening(); 
+  radio.stopListening();
   unsigned long start_timer = micros();                    // start the timer
   for (int i = 0; i < NUMSEND; i++) {
     report = radio.write(&sendData, sizeof(TXData));

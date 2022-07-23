@@ -45,7 +45,7 @@ union myInt32 {
 union myInt16 {
   uint8_t myByte[2];
   int16_t myInt16;
-};
+} velocity;
 
 byte numMessageRX, numMessageTX;
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
@@ -62,6 +62,8 @@ struct RXData {
   byte cLon2;
   byte cLon3;
   byte cLon4;
+  byte vel1;
+  byte vel2;
   byte ax1;
   byte ax2;
   byte ay1;
@@ -82,8 +84,7 @@ struct RXData {
   byte mz2;
   byte batCurr1;
   byte batCurr2;
-  byte batVol1;
-  byte batVol2;
+  byte batVol;
 };
 struct TXData {
   byte numMessage;
@@ -137,7 +138,7 @@ byte mz2 = 0;
 // ===                    Variables ADS1115                     ===
 // ================================================================
 myInt16 batCurr;
-myInt16 batVol;
+byte batVol;
 
 
 byte PMW_motor1 = 0;

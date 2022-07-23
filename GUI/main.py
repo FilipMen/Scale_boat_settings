@@ -13,6 +13,7 @@ import time
 import string
 #import pynmea2
 import pandas as pd
+import os
 from PyQt5 import QtWebEngineWidgets
 import json
 from  PyQt5.QtWebEngineWidgets import *
@@ -410,7 +411,11 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "AccX:"))
         self.label_2.setText(_translate("MainWindow", "Roll:"))
         #-------------------------- QT designer -------------------------------#
-        self.webEngineView.load(QUrl("file:///C:/Users/mendo/OneDrive%20-%20Universidad%20EAFIT/Energetica%202030/Barco%20Fluvial/TG%20-%20embarcaci%C3%B3n/Maps/Map.html"))
+        path = os.getcwd()
+        path = path.replace("\\", "/")
+        path = path.replace(" ", "%20")
+        print(f"file:///{path}/Map.html")
+        self.webEngineView.load(QUrl(f"file:///{path}/Map.html"))
         self.PWM1.setText(str(self.verticalSlider.value()))
         self.setRuderValue()
         self.verticalSlider.valueChanged.connect(self.setMotor1Value)
@@ -617,9 +622,9 @@ def Main_loop():
         if ui.serialPort.isOpen():
             if clock_count >= sample_time/yield_time:
                 clock_count = 0
-                tx_data["1"] = ui.MainWindow.horizontalSlider.value()
-                tx_data["2"] = keyboard.is_pressed('a') * ui.MainWindow.verticalSlider.value()
-                tx_data["3"] = keyboard.is_pressed('d') * ui.MainWindow.verticalSlider.value()
+                tx_data["1"] = 180 - ui.MainWindow.horizontalSlider.value()
+                tx_data["2"] = keyboard.is_pressed('d') * ui.MainWindow.verticalSlider.value()
+                tx_data["3"] = keyboard.is_pressed('a') * ui.MainWindow.verticalSlider.value()
                 tx_data["m"] = ui.mode
                 ui.serialPort.write((json.dumps(tx_data)+'\n').encode())
                 #print(json.dumps(tx_data))
@@ -646,15 +651,19 @@ def Main_loop():
                     ui.MainWindow.Roll.updatePlot(ax, ay, az)
                     ui.MainWindow.Pitch.updatePlot(gx, gy, gz)
                     ui.MainWindow.Yaw.updatePlot(mx, my, mz)
-                    bVol = data["bVol"]*0.1875*3.03763
-                    cLat = data["cLat"] / 100000.0
-                    cLon = data["cLon"] / 100000.0
+                    bVol = data["bV"]/10.0
+                    bCurr = data["bC"]*0.0625*0.0182-0.8094
+                    ui.MainWindow.AccX.updatePlot(bCurr,0)
+                    cLat = data["lat"]/100000.0
+                    cLon = data["lon"] / 100000.0
+                    vel = data["vel"] /1000.0
+                    ui.MainWindow.AccY.updatePlot(vel, 0)
                     cLatS = str(cLat)
                     pos = cLatS.find('.')
-                    cLatD = round(float(cLatS[0:pos-2]) + float(cLatS[pos-2:])/60.0, 6)
+                    cLatD = float(cLatS[0:pos-2]) + float(cLatS[pos-2:])/60.0
                     cLonS = str(cLon)
                     pos = cLonS.find('.')
-                    cLonD = round(float(cLonS[0:pos - 2]) - float(cLonS[pos - 2:]) / 60.0, 6)
+                    cLonD = float(cLonS[0:pos - 2]) - float(cLonS[pos - 2:]) / 60.0
                     if (cLatD != cLat1 or cLonD != cLon1):
                         cLat1 = cLatD
                         cLon1 = cLonD
@@ -665,7 +674,9 @@ def Main_loop():
                     #ui.MainWindow.yaw1.setText(str(round(yaw, 3)))
                     #ui.MainWindow.accx1.setText(str(round(accX, 3)))
                     #ui.MainWindow.accy1.setText(str(round(accY, 3)))
-                    ui.MainWindow.vol1.setText(str(round(bVol, 3)))
+                    ui.MainWindow.vol1.setText(str(round(bVol, 1)))
+                    ui.MainWindow.curr1.setText(str(round(bCurr, 3)))
+                    ui.MainWindow.vel1.setText(str(round(vel, 3)))
                 except:
                     print("No Json format")
                 #print(rx)

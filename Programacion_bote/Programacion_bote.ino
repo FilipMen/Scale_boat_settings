@@ -54,37 +54,15 @@ byte numMessageRX, numMessageTX;
 #define    ACC_FULL_SCALE_4_G        0x08
 #define    ACC_FULL_SCALE_8_G        0x10
 #define    ACC_FULL_SCALE_16_G       0x18
-//Direccion I2C de la IMU 9250
-//myInt16 yaw, pitch, roll, accX, accY, accZ, ;
-volatile bool intFlag;
+
 myInt16 ax, ay, az, gx, gy, gz, mx, my, mz;
-byte ax1 = 0;
-byte ax2 = 0;
-byte ay1 = 0;
-byte ay2 = 0;
-byte az1 = 0;
-byte az2 = 0;
-byte gx1 = 0;
-byte gx2 = 0;
-byte gy1 = 0;
-byte gy2 = 0;
-byte gz1 = 0;
-byte gz2 = 0;
-byte mx1 = 0;
-byte mx2 = 0;
-byte my1 = 0;
-byte my2 = 0;
-byte mz1 = 0;
-byte mz2 = 0;
+
 
 
 // ================================================================
 // ===                    Variables GPS                         ===
 // ================================================================
 String inputString = "";         // a String to hold incoming data
-int timeStamp; // GPS time stamp
-String NS = ""; // GPS North or Sur
-String EW = ""; // GPS East or Weast
 
 // ================================================================
 // ===                    Variables ADS1115                     ===
@@ -107,12 +85,6 @@ Adafruit_NeoPixel strip3(12, 11, NEO_GRB + NEO_KHZ800);
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
 // Instantiate an object for the nRF24L01 transceiver
 RF24 radio(49, 53);  //Set CE and CSN pins
-// To use different addresses on a pair of radios, we need a variable to
-// uniquely identify which address this radio will use to transmit
-bool radioNumber = 1; // 0 uses address[0] to transmit, 1 uses address[1] to transmit
-
-// Used to control whether this node is sending or receiving
-bool role = true;  // true = TX role, false = RX role
 
 // The sizeof this struct should not exceed 32 bytes
 struct TXData {
@@ -158,33 +130,26 @@ struct RXData {
   byte Mode;
 };
 
-// ================================================================
-// ===                    Variables control                     ===
-// ================================================================
-#define Selector 5 // Pin to select if control or PC mode
-#define EnableBoat 8 // Pin to Enable/Disable the output
-//#define RudderPin 10 // Pin to connect the servo motor for control the angle
-//#define ThMotor1 13 // Pin Motor 1 control
-//#define ThMotor2 15 // Pin Motor 2 control
-
-byte PMW_motor1 = 0;
-byte PMW_motor2 = 0;
-byte PMW_motor1_1 = 0;
-byte PMW_motor2_1 = 0;
-byte rudder_angle = 0;
-int Delayy = 10;
-
-// State machine variables
-bool state = 0;
-byte controlMode = 0;
-bool report = false;
-
-
 //Create a variable with the structure above and name it sent_data
 TXData sendData;
 RXData receiveData;
 byte numMessageRX1 = 0;
 
+// ================================================================
+// ===                    Variables control                     ===
+// ================================================================
+#define Selector 5 // Pin to select if control or PC mode
+#define EnableBoat 8 // Pin to Enable/Disable the output
+
+byte PMW_motor1 = 0;
+byte PMW_motor2 = 0;
+byte rudder_angle = 0;
+byte controlMode = 0;
+
+
+// ================================================================
+// ===                        SETUP                             ===
+// ================================================================
 void setup() {
   // ================================================================
   // ===                    Pin Setup                             ===
@@ -214,19 +179,13 @@ void setup() {
   cLat.myInt32 = 0; // GPS latitud
   cLon.myInt32 = 0; // GPS  Longitud
   velocity.myInt16 = 0;
-  NS.reserve(1);
-  EW.reserve(1);
   // ================================================================
   // ===                    Variables IMU SETUP                   ===
   // ================================================================
-  //IMU_calibration(); (To do)
-
   // Set accelerometers low pass filter at 5Hz
   I2CwriteByte(MPU9250_ADDRESS, 29, 0x06);
   // Set gyroscope low pass filter at 5Hz
   I2CwriteByte(MPU9250_ADDRESS, 26, 0x06);
-
-
   // Configure gyroscope range
   I2CwriteByte(MPU9250_ADDRESS, 27, GYRO_FULL_SCALE_1000_DPS);
   // Configure accelerometers range
@@ -297,7 +256,7 @@ void loop() {
     else {
       countSignal ++;
     }
+    ADC_read();
   }
-  //IMU_read();
   NRF24_receive();
 }

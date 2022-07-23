@@ -8,7 +8,7 @@ void serialEvent1() {
     // do something about it:
     if (inChar == '$') {
       if (inputString.substring(0, 5) == "GPRMC") {
-        Serial.print(inputString);
+        //Serial.print(inputString);
         if (getValue(inputString, ',', 2) == "A") {
           // Get Latitude from the GPS
           String auxiliar = getValue(inputString, ',', 3);
