@@ -1,8 +1,7 @@
 void NRF24_transmit() {
-  numMessageTX.myInt16 ++;
+  numMessageTX ++;
   // This device is a TX node
-  sendData.numMessage1 = numMessageTX.myByte[0];
-  sendData.numMessage2 = numMessageTX.myByte[1];
+  sendData.numMessage = numMessageTX;
   sendData.cLat1 = cLat.myByte[0];
   sendData.cLat2 = cLat.myByte[1];
   sendData.cLat3 = cLat.myByte[2];
@@ -63,11 +62,10 @@ void NRF24_receive() {
   while ( radio.available() ) {
     radio.read(&receiveData, sizeof(RXData));
     // Verify the message
-    numMessageRX.myByte[0] = receiveData.numMessage1;
-    numMessageRX.myByte[1] = receiveData.numMessage2;
-    if (numMessageRX1 != numMessageRX.myInt16) {
+    numMessageRX = receiveData.numMessage;
+    if (numMessageRX1 != numMessageRX) {
       countSignal = 0;
-      numMessageRX1 = numMessageRX.myInt16;
+      numMessageRX1 = numMessageRX;
       rudder_angle = receiveData.ch1;
       PMW_motor1 = receiveData.ch2;
       PMW_motor2 = receiveData.ch3;

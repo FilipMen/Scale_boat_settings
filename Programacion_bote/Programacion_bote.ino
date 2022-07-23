@@ -29,11 +29,12 @@ union myInt32 {
 union myInt16 {
   uint8_t myByte[2];
   int16_t myInt16;
-} numMessageRX, numMessageTX;
+} velocity;
 
 long sampleT;
 bool signalLost;
 byte countSignal = 0;
+byte numMessageRX, numMessageTX;
 #define DelayTime 100000
 #define NUMSEND 20
 #define NUMLOST 20
@@ -56,7 +57,7 @@ byte countSignal = 0;
 //Direccion I2C de la IMU 9250
 //myInt16 yaw, pitch, roll, accX, accY, accZ, ;
 volatile bool intFlag;
-myInt16 ax,ay,az,gx,gy,gz,mx,my,mz;
+myInt16 ax, ay, az, gx, gy, gz, mx, my, mz;
 byte ax1 = 0;
 byte ax2 = 0;
 byte ay1 = 0;
@@ -90,7 +91,7 @@ String EW = ""; // GPS East or Weast
 // ================================================================
 ADS1115 ADS(0x48);
 myInt16 batCurr;
-myInt16 batVol;
+byte batVol;
 
 // ================================================================
 // ===                    Variables WX2812                      ===
@@ -115,8 +116,7 @@ bool role = true;  // true = TX role, false = RX role
 
 // The sizeof this struct should not exceed 32 bytes
 struct TXData {
-  byte numMessage1;
-  byte numMessage2;
+  byte numMessage;
   byte cLat1;
   byte cLat2;
   byte cLat3;
@@ -125,6 +125,8 @@ struct TXData {
   byte cLon2;
   byte cLon3;
   byte cLon4;
+  byte vel1;
+  byte vel2;
   byte ax1;
   byte ax2;
   byte ay1;
@@ -145,13 +147,11 @@ struct TXData {
   byte mz2;
   byte batCurr1;
   byte batCurr2;
-  byte batVol1;
-  byte batVol2;
+  byte batVol;
 };
 
 struct RXData {
-  byte numMessage1;
-  byte numMessage2;
+  byte numMessage;
   byte ch1;
   byte ch2;
   byte ch3;
@@ -183,7 +183,7 @@ bool report = false;
 //Create a variable with the structure above and name it sent_data
 TXData sendData;
 RXData receiveData;
-int16_t numMessageRX1 = 0;
+byte numMessageRX1 = 0;
 
 void setup() {
   // ================================================================
@@ -213,6 +213,7 @@ void setup() {
   Serial1.begin(9600);
   cLat.myInt32 = 0; // GPS latitud
   cLon.myInt32 = 0; // GPS  Longitud
+  velocity.myInt16 = 0;
   NS.reserve(1);
   EW.reserve(1);
   // ================================================================

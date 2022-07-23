@@ -45,15 +45,15 @@ union myInt32 {
 union myInt16 {
   uint8_t myByte[2];
   int16_t myInt16;
-} numMessageRX, numMessageTX;
+};
 
+byte numMessageRX, numMessageTX;
 uint8_t address[][6] = {"BOAT2C", "C2BOAT"};
 RF24 radio(9, 10);  //CSN and CE pins
 
 // The sizeof this struct should not exceed 32 bytes
 struct RXData {
-  byte numMessage1;
-  byte numMessage2;
+  byte numMessage;
   byte cLat1;
   byte cLat2;
   byte cLat3;
@@ -86,8 +86,7 @@ struct RXData {
   byte batVol2;
 };
 struct TXData {
-  byte numMessage1;
-  byte numMessage2;
+  byte numMessage;
   byte ch1;
   byte ch2;
   byte ch3;
@@ -96,7 +95,7 @@ struct TXData {
 
 RXData receiveData;
 TXData sendData;
-int16_t numMessageRX1 = 0;
+byte numMessageRX1 = 0;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete

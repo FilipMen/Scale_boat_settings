@@ -647,14 +647,14 @@ def Main_loop():
                     ui.MainWindow.Pitch.updatePlot(gx, gy, gz)
                     ui.MainWindow.Yaw.updatePlot(mx, my, mz)
                     bVol = data["bVol"]*0.1875*3.03763
-                    cLat = data["cLat"]/100000
-                    cLon = data["cLon"] / 100000
+                    cLat = data["cLat"] / 100000.0
+                    cLon = data["cLon"] / 100000.0
                     cLatS = str(cLat)
                     pos = cLatS.find('.')
-                    cLatD = float(cLatS[0:pos-2]) + float(cLatS[pos-2:])/60.0
+                    cLatD = round(float(cLatS[0:pos-2]) + float(cLatS[pos-2:])/60.0, 6)
                     cLonS = str(cLon)
                     pos = cLonS.find('.')
-                    cLonD = float(cLonS[0:pos - 2]) - float(cLonS[pos - 2:]) / 60.0
+                    cLonD = round(float(cLonS[0:pos - 2]) - float(cLonS[pos - 2:]) / 60.0, 6)
                     if (cLatD != cLat1 or cLonD != cLon1):
                         cLat1 = cLatD
                         cLon1 = cLonD

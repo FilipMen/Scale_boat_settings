@@ -7,33 +7,25 @@ void serialEvent1() {
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
     if (inChar == '$') {
-#if (true)
-      Serial.print(inputString);
-#endif
-      if (inputString.substring(0, 6) == "$GPGLL") {
-        //Serial.print(inputString);
-        if (getValue(inputString, ',', 6) == "A") {
+      if (inputString.substring(0, 5) == "GPRMC") {
+        Serial.print(inputString);
+        if (getValue(inputString, ',', 2) == "A") {
           // Get Latitude from the GPS
-          cLat.myInt32 = getValue(inputString, ',', 1).toFloat()*100000;
-          NS = getValue(inputString, ',', 2);
-          if (NS == "S") {
-            cLat.myInt32 = -cLat.myInt32;
-          }
+          String auxiliar = getValue(inputString, ',', 3);
+          cLat.myInt32 = (auxiliar.substring(0, 4) + auxiliar.substring(5, 10)).toInt();
+          if (getValue(inputString, ',', 4) == "S") cLat.myInt32 = -cLat.myInt32;
           // Get Longitud from the GPS
-          cLon.myInt32 = getValue(inputString, ',', 3).toFloat()*100000;
-          EW = getValue(inputString, ',', 4);
-          if (EW == "W") {
-            cLon.myInt32 = -cLon.myInt32;
-          }
-          timeStamp = getValue(inputString, ',', 5).toInt();
-        }
-        else if (getValue(inputString, ',', 6) == "V") {
+          auxiliar = getValue(inputString, ',', 5);
+          cLon.myInt32 = (auxiliar.substring(0, 5) + auxiliar.substring(6, 11)).toInt();
+          if (getValue(inputString, ',', 6) == "W") cLon.myInt32 = -cLon.myInt32;
+          velocity.myInt16 = getValue(inputString, ',', 7).toFloat()*1000;
 #if (false)
-          Serial.println("Invalid");
+          Serial.print(cLat.myInt32);
+          Serial.print('\t');
+          Serial.println(cLon.myInt32);
 #endif
         }
       }
-      // clear the string:
       inputString = "";
     }
   }

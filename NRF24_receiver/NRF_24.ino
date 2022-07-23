@@ -2,13 +2,9 @@ void NRF24_receive() {
   while ( radio.available() ) {
     radio.read(&receiveData, sizeof(RXData));
     // Verify the message
-    numMessageRX.myByte[0] = receiveData.numMessage1;
-    numMessageRX.myByte[1] = receiveData.numMessage2;
-    if (numMessageRX1 != numMessageRX.myInt16) {
-      if(numMessageRX.myInt16 - numMessageRX1 >1){
-        Serial.println("¡¡¡¡ MESSAGE LOST !!!!!");
-      }
-      numMessageRX1 = numMessageRX.myInt16;
+    numMessageRX = receiveData.numMessage;
+    if (numMessageRX1 != numMessageRX) {
+      numMessageRX1 = numMessageRX;
       cLat.myByte[0] = receiveData.cLat1;
       cLat.myByte[1] = receiveData.cLat2;
       cLat.myByte[2] = receiveData.cLat3;
@@ -47,10 +43,9 @@ void NRF24_receive() {
 }
 
 void NRF24_transmit() {
-  numMessageTX.myInt16 ++;
+  numMessageTX ++;
   // This device is a TX node
-  sendData.numMessage1 = numMessageTX.myByte[0];
-  sendData.numMessage2 = numMessageTX.myByte[0];
+  sendData.numMessage = numMessageTX;
   sendData.ch1 = rudder_angle;
   sendData.ch2 = PMW_motor1;
   sendData.ch3 = PMW_motor2;
