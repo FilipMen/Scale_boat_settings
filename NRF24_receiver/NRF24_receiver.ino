@@ -115,7 +115,7 @@ String EW = ""; // GPS East or Weast
 // ===                    Variables IMU                         ===
 // ================================================================
 //Direccion I2C de la IMU 9250
-myInt16 ax,ay,az,gx,gy,gz,mx,my,mz;
+myInt16 ax, ay, az, gx, gy, gz, mx, my, mz;
 byte ax1 = 0;
 byte ax2 = 0;
 byte ay1 = 0;
@@ -179,10 +179,10 @@ unsigned long lastRecvTime = 0;
 
 void loop()
 {
-    if (micros() - sampleT > DelayTime) {
-      sampleT = micros();
-      NRF24_transmit();
-    }
+  //    if (micros() - sampleT > DelayTime) {
+  //      sampleT = micros();
+  //      NRF24_transmit();
+  //    }
   //Receive the radio data
   NRF24_receive();
 }//Loop end

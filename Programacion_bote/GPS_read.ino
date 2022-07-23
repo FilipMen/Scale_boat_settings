@@ -6,8 +6,8 @@ void serialEvent1() {
     inputString += inChar;
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
-    if (inChar == '\n') {
-#if (false)
+    if (inChar == '$') {
+#if (true)
       Serial.print(inputString);
 #endif
       if (inputString.substring(0, 6) == "$GPGLL") {
@@ -38,12 +38,6 @@ void serialEvent1() {
     }
   }
 }
-
-//void serialEvent() {
-//  while (Serial.available()) {
-//    Serial.println(Serial.read());
-//  }
-//}
 
 
 String getValue(String data, char separator, int index)

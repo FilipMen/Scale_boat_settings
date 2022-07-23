@@ -36,7 +36,7 @@ BaudRates = ['2400','4800','9600','19200','57600','115200']
 
 pnChannel = "raspi-tracker"
 
-# coor = np.genfromtxt("coordsResuMP.txt", delimiter = " ", skip_header = 1)
+coor = np.genfromtxt("coordsResuMP.txt", delimiter = " ", skip_header = 1)
 pnconfig = PNConfiguration()
 pnconfig.publish_key = "pub-c-538b35ba-c872-43c7-8d00-6e6b98ce8d18"
 pnconfig.subscribe_key = "sub-c-700df5b3-5efa-4d2a-89d6-f51d59e758a2"
@@ -171,13 +171,13 @@ class Ui_MainWindow(object):
         self.tab_2.setObjectName("tab_2")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName("gridLayout_5")
-        self.Roll = timePlot(self.tab_2)
+        self.Roll = timePlot1(self.tab_2)
         self.Roll.setObjectName("Roll")
         self.gridLayout_5.addWidget(self.Roll, 0, 0, 1, 1)
-        self.Pitch = timePlot(self.tab_2)
+        self.Pitch = timePlot1(self.tab_2)
         self.Pitch.setObjectName("Pitch")
         self.gridLayout_5.addWidget(self.Pitch, 0, 1, 1, 1)
-        self.Yaw = timePlot(self.tab_2)
+        self.Yaw = timePlot1(self.tab_2)
         self.Yaw.setObjectName("Yaw")
         self.gridLayout_5.addWidget(self.Yaw, 0, 2, 1, 1)
         self.tabWidget.addTab(self.tab_2, "")
@@ -410,7 +410,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "AccX:"))
         self.label_2.setText(_translate("MainWindow", "Roll:"))
         #-------------------------- QT designer -------------------------------#
-        self.webEngineView.load(QUrl("file:///C:/Users/juanm/Documents/GitHub/Scale_boat_settings/GUI/Map.html"))
+        self.webEngineView.load(QUrl("file:///C:/Users/mendo/OneDrive%20-%20Universidad%20EAFIT/Energetica%202030/Barco%20Fluvial/TG%20-%20embarcaci%C3%B3n/Maps/Map.html"))
         self.PWM1.setText(str(self.verticalSlider.value()))
         self.setRuderValue()
         self.verticalSlider.valueChanged.connect(self.setMotor1Value)
@@ -554,6 +554,41 @@ class Graphic_interface(QtWidgets.QMainWindow):
             print("unknown event: %r %r", e.type(), e)
         return super().event(e)
 
+class timePlot1(QWidget):
+    def __init__(self, parent=None, yname='Reading / mV'):
+        QWidget.__init__(self, parent)
+        self.plot = pg.PlotWidget(
+            title="Example plot",
+            labels={'left': yname},
+            axisItems={'bottom': TimeAxisItem(orientation='bottom')}
+        )
+        self.plot.setYRange(0, 5000)
+        self.plot.setXRange(timestamp(), timestamp() + 20)
+        self.plot.showGrid(x=True, y=True)
+
+        self.layout = QGridLayout(self)
+        self.layout.addWidget(self.plot, 0, 0)
+
+        self.plotCurve = self.plot.plot()
+        self.plotCurve1 = self.plot.plot()
+        self.plotCurve2 = self.plot.plot()
+
+        self.plotData = {'x': [], 'y': [], 'z': [], 'z1': []}
+
+    def updatePlot(self, newValue, newValue1, newValue2):
+        self.plotData['y'].append(newValue)
+        self.plotData['z'].append(newValue1)
+        self.plotData['z1'].append(newValue2)
+        self.plotData['x'].append(timestamp1())
+        self.plot.setYRange(min(self.plotData['y'][-150:] + self.plotData['z'][-150:] + self.plotData['z1'][-150:]),
+                            max(self.plotData['y'][-150:] + self.plotData['z'][-150:] + self.plotData['z1'][-150:]))
+        self.plot.setXRange(timestamp() - 15, timestamp() + 5)
+        self.plotCurve.setData(self.plotData['x'], self.plotData['y'], pen=pg.mkPen(color=(255, 0, 0)))
+        self.plotCurve1.setData(self.plotData['x'], self.plotData['z'], pen=pg.mkPen(color=(0, 0, 255)))
+        self.plotCurve2.setData(self.plotData['x'], self.plotData['z1'], pen=pg.mkPen(color=(0, 255, 0)))
+
+
+
 def GetComPorts():
     comlist = serial.tools.list_ports.comports()
     connected = []
@@ -595,11 +630,22 @@ def Main_loop():
                 rx = ui.serialPort.readline().decode("utf-8").rstrip('\r\n')
                 try:
                     data = json.loads(rx)
-                    yaw = data["yaw"]/182.0
-                    roll = data["roll"] / 182.0
-                    pitch = data["pitch"] / 182.0
-                    accX = data["accX"] / 182.0
-                    accY = data["accY"] / 182.0
+                    ''' 
+                    IMU information, with this information is needed to calculate the Roll, Pitch and Yaw
+                    '''
+                    ax = data["ax"]
+                    ay = data["ay"]
+                    az = data["az"]
+                    gx = data["gx"]
+                    gy = data["gy"]
+                    gz = data["gz"]
+                    mx = data["mx"]
+                    my = data["my"]
+                    mz = data["mz"]
+                    # Update plots
+                    ui.MainWindow.Roll.updatePlot(ax, ay, az)
+                    ui.MainWindow.Pitch.updatePlot(gx, gy, gz)
+                    ui.MainWindow.Yaw.updatePlot(mx, my, mz)
                     bVol = data["bVol"]*0.1875*3.03763
                     cLat = data["cLat"]/100000
                     cLon = data["cLon"] / 100000
@@ -614,11 +660,11 @@ def Main_loop():
                         cLon1 = cLonD
                         updateCoor(cLatD, cLonD)
                         print(f"{cLatD},{cLonD}")
-                    ui.MainWindow.pitch1.setText(str(round(pitch, 3)))
-                    ui.MainWindow.roll1.setText(str(round(roll, 3)))
-                    ui.MainWindow.yaw1.setText(str(round(yaw, 3)))
-                    ui.MainWindow.accx1.setText(str(round(accX, 3)))
-                    ui.MainWindow.accy1.setText(str(round(accY, 3)))
+                    #ui.MainWindow.pitch1.setText(str(round(pitch, 3)))
+                    #ui.MainWindow.roll1.setText(str(round(roll, 3)))
+                    #ui.MainWindow.yaw1.setText(str(round(yaw, 3)))
+                    #ui.MainWindow.accx1.setText(str(round(accX, 3)))
+                    #ui.MainWindow.accy1.setText(str(round(accY, 3)))
                     ui.MainWindow.vol1.setText(str(round(bVol, 3)))
                 except:
                     print("No Json format")
