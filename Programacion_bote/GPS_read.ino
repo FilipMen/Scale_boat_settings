@@ -1,31 +1,31 @@
-void serialEvent() {
-  while (Serial.available()) {
+void serialEvent1() {
+  while (Serial1.available()) {
     // get the new byte:
-    char inChar = (char)Serial.read();
+    char inChar = (char)Serial1.read();
     // add it to the inputString:
     inputString += inChar;
     // if the incoming character is a newline, set a flag so the main loop can
     // do something about it:
-    if (inChar == '\n') {
-      Serial.print(inputString);
-      if (inputString.substring(0, 6) == "$GPGLL") {
-        Serial.print(inputString);
-        if (getValue(inputString, ',', 6) == "A") {
-          cLat.myfloat = getValue(inputString, ',', 1).toFloat();
-          NS = getValue(inputString, ',', 2);
-          if (NS == "S"){
-            cLat.myfloat = -cLat.myfloat;
-          }
-          
-          cLon.myfloat = getValue(inputString, ',', 3).toFloat();
-          EW = getValue(inputString, ',', 4);
-          timeStamp = getValue(inputString, ',', 5).toInt();
-        }
-        if (getValue(inputString, ',', 6) == "V") {
-          Serial.println("Invalid");
+    if (inChar == '$') {
+      if (inputString.substring(0, 5) == "GPRMC") {
+        //Serial.print(inputString);
+        if (getValue(inputString, ',', 2) == "A") {
+          // Get Latitude from the GPS
+          String auxiliar = getValue(inputString, ',', 3);
+          cLat.myInt32 = (auxiliar.substring(0, 4) + auxiliar.substring(5, 10)).toInt();
+          if (getValue(inputString, ',', 4) == "S") cLat.myInt32 = -cLat.myInt32;
+          // Get Longitud from the GPS
+          auxiliar = getValue(inputString, ',', 5);
+          cLon.myInt32 = (auxiliar.substring(0, 5) + auxiliar.substring(6, 11)).toInt();
+          if (getValue(inputString, ',', 6) == "W") cLon.myInt32 = -cLon.myInt32;
+          velocity.myInt16 = getValue(inputString, ',', 7).toFloat()*1000;
+#if (false)
+          Serial.print(cLat.myInt32);
+          Serial.print('\t');
+          Serial.println(cLon.myInt32);
+#endif
         }
       }
-      // clear the string:
       inputString = "";
     }
   }
