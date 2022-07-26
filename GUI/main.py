@@ -30,8 +30,10 @@ from qtwidgets import Toggle
 import serial
 import serial.tools.list_ports
 import keyboard
-
-
+import csv
+from os.path import exists
+from datetime import datetime
+import pytz
 
 BaudRates = ['2400','4800','9600','19200','57600','115200']
 
@@ -506,12 +508,34 @@ class Graphic_interface(QtWidgets.QMainWindow):
         toolBar.addWidget(self.openCOM)
 
 
+        # ***** Tool bar declaration ********
+        toolBar2 = QToolBar("Tool bar")
+        toolButton1 = QToolButton()
+        # ******** Text "CSV name" declaration ********
+        toolButton1.setText("File name: ")
+        toolButton1.setCheckable(False)
+        toolBar2.addWidget(toolButton1)
+
+        self.lineEdit1 = QLineEdit()
+        self.lineEdit1.setText('Data')
+        toolBar2.addWidget(self.lineEdit1)
+
+        self.OpenBrowser = QPushButton()
+        self.OpenBrowser.setText("Open")
+        toolBar2.addWidget(self.OpenBrowser)
+
+        self.Record = Toggle()
+        toolBar2.addWidget(self.Record)
+        self.addToolBar(toolBar2)
+
         self.MainWindow = Ui_MainWindow()
         self.MainWindow.setupUi(self)
 
+        self.path = ""
         self.mode = 10
         self.MainWindow.enableBoat.stateChanged.connect(self.setMode)
         self.MainWindow.radioControl.stateChanged.connect(self.setMode)
+        self.Record.stateChanged.connect(self.InitRecord)
 
     def setMode(self):
         if self.MainWindow.enableBoat.isChecked():
@@ -558,6 +582,35 @@ class Graphic_interface(QtWidgets.QMainWindow):
         )):
             print("unknown event: %r %r", e.type(), e)
         return super().event(e)
+
+    def InitRecord(self):
+        if self.Record.isChecked():
+            file_name = "Data/" + self.lineEdit1.text()
+            file_name = "Data/Boat_data" if file_name == "" else file_name
+            self.path = file_name + ".csv"
+            cont = 1
+            while exists(self.path):
+                self.path = file_name + "({})".format(cont) + ".csv"
+                cont += 1
+            with open(self.path, 'a', newline='') as f:
+                csvData = []
+                csvData.append('TimeStamp')
+                csvData.append('Latitude')
+                csvData.append("Longitude")
+                csvData.append("Velocity")
+                csvData.append("AccX")
+                csvData.append("AccY")
+                csvData.append("AccZ")
+                csvData.append("GyrX")
+                csvData.append("GyrY")
+                csvData.append("GyrZ")
+                csvData.append("MagX")
+                csvData.append("MagY")
+                csvData.append("MagZ")
+                csvData.append("Current")
+                csvData.append("Voltage")
+                data_writer = csv.writer(f)
+                data_writer.writerow(csvData)
 
 class timePlot1(QWidget):
     def __init__(self, parent=None, yname='Reading / mV'):
@@ -669,6 +722,27 @@ def Main_loop():
                         cLon1 = cLonD
                         updateCoor(cLatD, cLonD)
                         print(f"{cLatD},{cLonD}")
+
+                    if ui.Record.isChecked():
+                        with open(ui.path, 'a',  newline='') as f:
+                            csvData = []
+                            csvData.append(datetime.now(pytz.timezone('America/Bogota')).strftime("%H:%M:%S.%f"))
+                            csvData.append(cLatD)
+                            csvData.append(cLonD)
+                            csvData.append(vel)
+                            csvData.append(ax)
+                            csvData.append(ay)
+                            csvData.append(az)
+                            csvData.append(gx)
+                            csvData.append(gy)
+                            csvData.append(gz)
+                            csvData.append(mx)
+                            csvData.append(my)
+                            csvData.append(mz)
+                            csvData.append(bCurr)
+                            csvData.append(bVol)
+                            data_writer = csv.writer(f)
+                            data_writer.writerow(csvData)
                     #ui.MainWindow.pitch1.setText(str(round(pitch, 3)))
                     #ui.MainWindow.roll1.setText(str(round(roll, 3)))
                     #ui.MainWindow.yaw1.setText(str(round(yaw, 3)))
