@@ -747,6 +747,9 @@ def Main_loop():
             else:
                 clock_count += 1
 
+                pwm1 = keyboard.is_pressed('d') * ui.MainWindow.verticalSlider.value()
+                pwm2 = keyboard.is_pressed('a') * ui.MainWindow.verticalSlider.value()
+                mAngle = 180 - ui.MainWindow.horizontalSlider.value()
             if ui.serialPort.in_waiting:
                 rx = ui.serialPort.readline().decode("utf-8").rstrip('\r\n')
                 try:
@@ -771,7 +774,7 @@ def Main_loop():
 
                     gyr_data = np.array([gx,gy,gz])
                     acc_data = np.array([ax,ay,az])
-                    acc_data = 9.81*acc_0/np.linalg.norm(acc_data)
+                    acc_data = 9.81*acc_data/np.linalg.norm(acc_data)
                     mag_data = np.array([mx,my,mz])
                     
                     Q = sensor.update(gyr=gyr_data-gyr_0,acc=acc_data,mag=mag_data,q = Qk1)
@@ -827,9 +830,9 @@ def Main_loop():
                             csvData.append(yVel_real)
                             csvData.append(bVol)
                             csvData.append(bCurr)
-                            #csvData.append(pwm1)
-                            #csvData.append(pwm2)
-                            #csvData.append(mAngle)
+                            csvData.append(pwm1)
+                            csvData.append(pwm2)
+                            csvData.append(mAngle)
                             csvData.append(cLatD)
                             csvData.append(cLonD)
 
